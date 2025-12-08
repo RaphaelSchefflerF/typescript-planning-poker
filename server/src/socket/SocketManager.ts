@@ -19,10 +19,6 @@ export class SocketManager {
 
       socket.on("disconnect", () => {
         console.log(`User disconnected: ${socket.id}`);
-        // Handle disconnection logic if needed (e.g., auto-leave rooms)
-        // Note: Ideally we should track which room the user was in to efficiently leave it.
-        // For simplicity, we might rely on client sending leave event or iterate (less efficient).
-        // A better approach is to store socketId -> roomId mapping in RoomManager or here.
       });
     });
   }

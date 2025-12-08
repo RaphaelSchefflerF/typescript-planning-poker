@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 
-const SOCKET_URL = import.meta.env.PROD ? "/" : "http://localhost:3000";
+const SOCKET_URL = "/";
 
 console.log("[Socket Singleton] Initializing socket with URL:", SOCKET_URL);
 

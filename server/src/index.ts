@@ -15,11 +15,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from client build (for production)
 const clientBuildPath = path.join(__dirname, "../../client/dist");
 app.use(express.static(clientBuildPath));
 
-// Initialize Socket.io
 const io = new Server(server, {
   cors: {
     origin: process.env.ALLOWED_ORIGINS || "*",
@@ -29,7 +27,6 @@ const io = new Server(server, {
 
 new SocketManager(io);
 
-// Handle React routing, return all requests to React app
 app.get("*", (req, res) => {
   res.sendFile(path.join(clientBuildPath, "index.html"));
 });

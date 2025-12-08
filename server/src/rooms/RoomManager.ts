@@ -5,12 +5,18 @@ export class RoomManager {
   private rooms: Map<string, Room> = new Map();
 
   constructor() {
-    // Cleanup interval: remove rooms older than 24 hours
     setInterval(() => this.cleanupRooms(), 60 * 60 * 1000);
   }
 
+  /**
+   * @description Create a room
+   * @param adminId Admin ID
+   * @param userName User name
+   * @param roomName Room name
+   * @returns Room
+   */
   createRoom(adminId: string, userName: string, roomName?: string): Room {
-    const roomId = uuidv4().substring(0, 8); // Short ID for easier sharing
+    const roomId = uuidv4().substring(0, 8);
     const newRoom: Room = {
       id: roomId,
       name: roomName || `Room ${roomId}`,
@@ -36,10 +42,22 @@ export class RoomManager {
     return newRoom;
   }
 
+  /**
+   * @description Get a room
+   * @param roomId Room ID
+   * @returns Room | undefined
+   */
   getRoom(roomId: string): Room | undefined {
     return this.rooms.get(roomId);
   }
 
+  /**
+   * @description Join a room
+   * @param roomId Room ID
+   * @param userId User ID
+   * @param userName User name
+   * @returns Room | undefined
+   */
   joinRoom(roomId: string, userId: string, userName: string): Room | undefined {
     const room = this.rooms.get(roomId);
     if (!room) return undefined;
@@ -57,6 +75,12 @@ export class RoomManager {
     return room;
   }
 
+  /**
+   * @description Leave a room
+   * @param roomId Room ID
+   * @param userId User ID
+   * @returns Room | undefined
+   */
   leaveRoom(roomId: string, userId: string): Room | undefined {
     const room = this.rooms.get(roomId);
     if (!room) return undefined;
@@ -64,13 +88,10 @@ export class RoomManager {
     room.participants = room.participants.filter((p) => p.id !== userId);
     delete room.votes[userId];
 
-    // If admin leaves, assign new admin if there are other participants
     if (room.admin === userId && room.participants.length > 0) {
       room.admin = room.participants[0].id;
       room.participants[0].isAdmin = true;
     }
-
-    // If room is empty, remove it
     if (room.participants.length === 0) {
       this.rooms.delete(roomId);
       return undefined;
@@ -79,6 +100,13 @@ export class RoomManager {
     return room;
   }
 
+  /**
+   * @description Remove a user from a room
+   * @param roomId Room ID
+   * @param adminId Admin ID
+   * @param userIdToRemove User ID to remove
+   * @returns Room | undefined
+   */
   removeUser(
     roomId: string,
     adminId: string,
@@ -87,7 +115,6 @@ export class RoomManager {
     const room = this.rooms.get(roomId);
     if (!room || room.admin !== adminId) return undefined;
 
-    // Cannot remove self (use leaveRoom instead)
     if (adminId === userIdToRemove) return undefined;
 
     room.participants = room.participants.filter(
@@ -98,6 +125,13 @@ export class RoomManager {
     return room;
   }
 
+  /**
+   * @description Submit a vote in a room
+   * @param roomId Room ID
+   * @param userId User ID
+   * @param vote Vote
+   * @returns Room | undefined
+   */
   submitVote(roomId: string, userId: string, vote: string): Room | undefined {
     const room = this.rooms.get(roomId);
     if (!room) return undefined;
@@ -112,6 +146,12 @@ export class RoomManager {
     return room;
   }
 
+  /**
+   * @description Reveal votes in a room
+   * @param roomId Room ID
+   * @param adminId Admin ID
+   * @returns Room | undefined
+   */
   revealVotes(roomId: string, adminId: string): Room | undefined {
     const room = this.rooms.get(roomId);
     if (!room || room.admin !== adminId) return undefined;
@@ -120,6 +160,12 @@ export class RoomManager {
     return room;
   }
 
+  /**
+   * @description Reset votes in a room
+   * @param roomId Room ID
+   * @param adminId Admin ID
+   * @returns Room | undefined
+   */
   resetVotes(roomId: string, adminId: string): Room | undefined {
     const room = this.rooms.get(roomId);
     if (!room || room.admin !== adminId) return undefined;
@@ -134,10 +180,12 @@ export class RoomManager {
     return room;
   }
 
+  /**
+   * @description Cleanup rooms older than 24 hours
+   */
   private cleanupRooms() {
     const now = Date.now();
-    const timeout = 24 * 60 * 60 * 1000; // 24 hours
-
+    const timeout = 24 * 60 * 60 * 1000;
     for (const [roomId, room] of this.rooms.entries()) {
       if (now - room.createdAt > timeout) {
         this.rooms.delete(roomId);

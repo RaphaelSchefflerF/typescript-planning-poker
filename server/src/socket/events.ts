@@ -7,7 +7,10 @@ export const registerSocketEvents = (
   socket: Socket,
   roomManager: RoomManager
 ) => {
-  // Create Room
+  /**
+   * User event
+   * @description Create a room
+   */
   socket.on("room:create", (data: CreateRoomDto) => {
     console.log(
       `[Socket] User ${socket.id} creating room with name: ${data.roomName}`
@@ -23,7 +26,10 @@ export const registerSocketEvents = (
     socket.emit("room:joined", { room });
   });
 
-  // Join Room
+  /**
+   * User event
+   * @description Join a room
+   */
   socket.on("room:join", (data: JoinRoomDto) => {
     console.log(
       `[Socket] User ${socket.id} joining room ${data.roomId} as ${data.userName}`
@@ -35,10 +41,8 @@ export const registerSocketEvents = (
         `[Socket] User ${socket.id} joined room ${room.id} successfully`
       );
 
-      // Emit to the user who joined
       socket.emit("room:joined", { room });
 
-      // Find the participant to broadcast
       const participant = room.participants.find((p) => p.id === socket.id);
       if (participant) {
         console.log(
@@ -58,7 +62,10 @@ export const registerSocketEvents = (
     }
   });
 
-  // Leave Room
+  /**
+   * User event
+   * @description Leave a room
+   */
   socket.on("room:leave", (roomId: string) => {
     const room = roomManager.leaveRoom(roomId, socket.id);
     socket.leave(roomId);
@@ -70,7 +77,10 @@ export const registerSocketEvents = (
     }
   });
 
-  // Submit Vote
+  /**
+   * User event
+   * @description Submit a vote in a room
+   */
   socket.on(
     "vote:submit",
     ({ roomId, vote }: { roomId: string; vote: string }) => {
@@ -78,7 +88,6 @@ export const registerSocketEvents = (
       if (room) {
         io.to(roomId).emit("vote:received", { userId: socket.id });
 
-        // Check if all voted
         const allVoted = room.participants.every((p) => p.hasVoted);
         if (allVoted && room.settings.autoReveal) {
           roomManager.revealVotes(roomId, room.admin);
@@ -88,7 +97,10 @@ export const registerSocketEvents = (
     }
   );
 
-  // Reveal Votes (Admin only)
+  /**
+   * User event
+   * @description Reveal votes in a room
+   */
   socket.on("vote:reveal", (roomId: string) => {
     const room = roomManager.revealVotes(roomId, socket.id);
     if (room) {
@@ -96,7 +108,10 @@ export const registerSocketEvents = (
     }
   });
 
-  // Reset Votes (Admin only)
+  /**
+   * Admin only event
+   * @description Reset votes in a room
+   */
   socket.on("vote:reset", (roomId: string) => {
     const room = roomManager.resetVotes(roomId, socket.id);
     if (room) {
@@ -104,20 +119,20 @@ export const registerSocketEvents = (
     }
   });
 
-  // Remove User (Admin only)
+  /**
+   * Admin only event
+   * @description Remove a user from a room
+   */
   socket.on(
     "admin:remove-user",
     ({ roomId, userId }: { roomId: string; userId: string }) => {
       const room = roomManager.removeUser(roomId, socket.id, userId);
       if (room) {
-        // Notify the removed user
         io.to(userId).emit("user:kicked");
-        // Make the socket leave the room
         const targetSocket = io.sockets.sockets.get(userId);
         if (targetSocket) {
           targetSocket.leave(roomId);
         }
-        // Notify others
         io.to(roomId).emit("user:left", { userId });
       }
     }

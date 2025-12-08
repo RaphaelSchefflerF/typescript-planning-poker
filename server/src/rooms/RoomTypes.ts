@@ -1,5 +1,5 @@
 export interface Participant {
-  id: string; // socket.id
+  id: string;
   name: string;
   isAdmin: boolean;
   hasVoted: boolean;
@@ -9,9 +9,9 @@ export interface Participant {
 export interface Room {
   id: string;
   name: string;
-  admin: string; // socket.id of the admin
+  admin: string;
   participants: Participant[];
-  votes: Record<string, string>; // socket.id -> vote
+  votes: Record<string, string>;
   revealed: boolean;
   createdAt: number;
   settings: {
