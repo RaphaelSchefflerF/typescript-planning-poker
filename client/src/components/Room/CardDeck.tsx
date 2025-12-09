@@ -25,6 +25,7 @@ export const CardDeck: React.FC = () => {
         <button
           key={card}
           onClick={() => handleVote(card)}
+          disabled={room.revealed}
           className={`
             w-16 h-20 rounded-xl text-2xl font-bold transition-all transform hover:-translate-y-2
             ${
