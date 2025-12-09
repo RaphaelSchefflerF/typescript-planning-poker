@@ -9,3 +9,10 @@
 body {
   @apply bg-slate-900 text-white min-h-screen;
 }
+
+#emoji-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+}

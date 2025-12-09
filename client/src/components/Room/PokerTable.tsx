@@ -8,6 +8,7 @@ import { Button } from "../UI/Button";
 import { Seat } from "./Seat";
 import { Table } from "./Table";
 import { FloatingEmoji } from "./FloatingEmoji";
+import { FloatingEmojiPortal } from "../../lib/emoji-layer/FloatingEmojiPortal";
 
 interface FlyingEmoji {
   id: string;
@@ -46,31 +47,29 @@ export const PokerTable: React.FC = () => {
     }) => {
       const endNode = seatRefs.current.get(toId);
 
-      if (endNode) {
-        const endRect = endNode.getBoundingClientRect();
+      if (!endNode) return;
 
-        // Random start position from sides of screen (as requested)
-        const side = Math.random() > 0.5 ? "left" : "right";
-        const startX = side === "left" ? -100 : window.innerWidth + 100;
-        const startY = Math.random() * window.innerHeight;
+      const endRect = endNode.getBoundingClientRect();
 
-        // Calculate center of target with Y offset to hit the card
-        const targetCenterX = endRect.left + endRect.width / 2;
-        const targetCenterY = endRect.top + endRect.height / 2 - 30;
+      // Calculate center of card in document coordinates
+      const targetCenterX = endRect.left + window.scrollX + endRect.width / 2;
+      const targetCenterY =
+        endRect.top + window.scrollY + endRect.height / 2 - 30;
 
-        setFlyingEmojis((prev) => [
-          ...prev,
-          {
-            id: Math.random().toString(36).substr(2, 9),
-            emoji,
-            startPos: { x: startX, y: startY },
-            endPos: {
-              x: targetCenterX,
-              y: targetCenterY,
-            },
-          },
-        ]);
-      }
+      // Random start position (outside screen)
+      const side = Math.random() > 0.5 ? "left" : "right";
+      const startX = side === "left" ? -100 : window.innerWidth + 100;
+      const startY = Math.random() * window.innerHeight + window.scrollY;
+
+      setFlyingEmojis((prev) => [
+        ...prev,
+        {
+          id: Math.random().toString(36).substr(2, 9),
+          emoji,
+          startPos: { x: startX, y: startY },
+          endPos: { x: targetCenterX, y: targetCenterY },
+        },
+      ]);
     };
 
     socket.on("emoji:thrown", handleEmojiThrown);
@@ -220,15 +219,17 @@ export const PokerTable: React.FC = () => {
 
       {/* Floating Emojis Layer */}
       {flyingEmojis.map((anim) => (
-        <FloatingEmoji
-          key={anim.id}
-          emoji={anim.emoji}
-          startPos={anim.startPos}
-          endPos={anim.endPos}
-          onComplete={() =>
-            setFlyingEmojis((prev) => prev.filter((p) => p.id !== anim.id))
-          }
-        />
+        <FloatingEmojiPortal>
+          <FloatingEmoji
+            key={anim.id}
+            emoji={anim.emoji}
+            startPos={anim.startPos}
+            endPos={anim.endPos}
+            onComplete={() =>
+              setFlyingEmojis((prev) => prev.filter((p) => p.id !== anim.id))
+            }
+          />
+        </FloatingEmojiPortal>
       ))}
 
       <InviteModal
