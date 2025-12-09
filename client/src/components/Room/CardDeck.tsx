@@ -5,6 +5,7 @@ import { useSocket } from "../../hooks/useSocket";
 export const CardDeck: React.FC = () => {
   const room = useRoomStore((state) => state.room);
   const userId = useRoomStore((state) => state.userId);
+  const updateVote = useRoomStore((state) => state.updateVote);
   const socket = useSocket();
 
   if (!room || !userId) return null;
@@ -14,6 +15,7 @@ export const CardDeck: React.FC = () => {
 
   const handleVote = (card: string) => {
     if (!socket) return;
+    updateVote(userId, card);
     socket.emit("vote:submit", { roomId: room.id, vote: card });
   };
 
@@ -24,7 +26,7 @@ export const CardDeck: React.FC = () => {
           key={card}
           onClick={() => handleVote(card)}
           className={`
-            w-16 h-24 rounded-xl text-2xl font-bold transition-all transform hover:-translate-y-2
+            w-16 h-20 rounded-xl text-2xl font-bold transition-all transform hover:-translate-y-2
             ${
               currentVote === card
                 ? "bg-blue-600 text-white shadow-lg ring-4 ring-blue-400 scale-110"
