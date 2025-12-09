@@ -25,7 +25,7 @@ export const Seat = forwardRef<HTMLDivElement, SeatProps>(
       >
         <div
           className={`
-            w-16 h-24 rounded-lg flex items-center justify-center shadow-xl border-2
+            w-14 h-20 rounded-lg flex items-center justify-center shadow-xl border-2
             ${
               isRevealed && participant.vote
                 ? "bg-blue-600 border-blue-400"

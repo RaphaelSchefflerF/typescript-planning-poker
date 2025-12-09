@@ -101,22 +101,26 @@ export const PokerTable: React.FC = () => {
   const currentUser = room.participants.find((p) => p.id === userId);
 
   const getSeatPosition = (index: number, total: number) => {
-    // Distribute participants in an ellipse
-    // Start from -PI (left) and go clockwise to 0 (right)
-    // Simple approach: Distribute evenly around the upper arc (-180 to 0 degrees)
-    // plus a bit of the sides.
-    const startAngle = Math.PI; // 180 deg (Left)
-    const endAngle = 0; // 0 deg (Right)
+    const t = total > 1 ? index / (total - 1) : 0; // 0 → 1
 
-    // If we have many users, we might wrap around more.
-    const angleStep = (startAngle - endAngle) / (total > 1 ? total - 1 : 1);
+    // Interpolar ângulo baseado no T (não mais step fixo)
+    const startAngle = Math.PI;
+    const endAngle = 0;
 
-    const angle = startAngle - index * angleStep;
+    const angle = startAngle + (endAngle - startAngle) * t;
 
-    const left = Math.cos(angle) * RADIUS_X;
-    const top = -Math.sin(angle) * RADIUS_Y; // Negative is up (inverting to place on top arc)
+    const VERTICAL_COMPRESS = 0.95;
+    const SIDE_STRAIGHTEN = 0.7;
 
-    return { left, top };
+    const x = Math.cos(angle) * RADIUS_X;
+
+    const sinVal = Math.sin(angle);
+    const adjustedSin =
+      Math.sign(sinVal) * Math.pow(Math.abs(sinVal), SIDE_STRAIGHTEN);
+
+    const y = -adjustedSin * RADIUS_Y * VERTICAL_COMPRESS;
+
+    return { left: x, top: y };
   };
 
   return (
@@ -152,7 +156,7 @@ export const PokerTable: React.FC = () => {
           </div>
 
           {/* Seats Container (Centered on Table) */}
-          <div className="absolute inset-0 pointer-events-none">
+          <div className="inset-0 pointer-events-none">
             {otherParticipants.map((p, index) => {
               const { left, top } = getSeatPosition(
                 index,
@@ -160,9 +164,9 @@ export const PokerTable: React.FC = () => {
               );
               // Adjust for seat center
               const style = {
-                transform: `translate(${left}px, ${top - 60}px)`, // Shift up a bit to center visually
-                left: "50%",
-                top: "50%",
+                transform: `translate(${left}px, ${top - 80}px)`, // Shift up a bit to center visually
+                left: "55%",
+                top: "180%",
                 position: "absolute" as const,
               };
 
@@ -190,7 +194,7 @@ export const PokerTable: React.FC = () => {
 
           {/* Current User Seat - Fixed at bottom center */}
           {currentUser && (
-            <div className="absolute bottom-[-180px] z-20">
+            <div className="absolute bottom-[-150px] z-20">
               <Seat
                 ref={(el) => {
                   if (el) seatRefs.current.set(currentUser.id, el);
