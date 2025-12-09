@@ -137,4 +137,12 @@ export const registerSocketEvents = (
       }
     }
   );
+
+  /**
+   * User event
+   * @description Throw an emoji
+   */
+  socket.on("emoji:throw", ({ roomId, emoji, fromId, toId }) => {
+    io.to(roomId).emit("emoji:thrown", { emoji, fromId, toId });
+  });
 };
