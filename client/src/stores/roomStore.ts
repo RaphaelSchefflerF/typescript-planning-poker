@@ -64,7 +64,6 @@ export const useRoomStore = create<RoomState>((set) => ({
       const participants = state.room.participants.map((p) =>
         p.id === userId ? { ...p, hasVoted: true, vote } : p
       );
-
       return {
         room: {
           ...state.room,
@@ -76,6 +75,22 @@ export const useRoomStore = create<RoomState>((set) => ({
 
   revealVotes: (votes) =>
     set((state) => {
+      const cards = ["0", "1", "2", "3", "5", "8", "13", "21", "?", "☕"];
+      const possible = cards.filter((c) => c !== "?" && c !== "☕");
+
+      for (const [userId, vote] of Object.entries(votes)) {
+        if (vote === "?") {
+          const index = Math.floor(Math.random() * possible.length);
+          const picked = possible[index];
+          votes[userId] = picked;
+          state.room?.participants.forEach((p) => {
+            if (p.id === userId) p.vote = picked;
+          });
+        } else {
+          votes[userId] = vote;
+        }
+      }
+
       if (!state.room) return state;
       return {
         room: {
