@@ -1,12 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSocket } from "../../hooks/useSocket";
 import { Button } from "../UI/Button";
 import { Card } from "../UI/Card";
 
-export const JoinRoom: React.FC = () => {
+interface JoinRoomProps {
+  initialRoomId?: string | null;
+}
+
+export const JoinRoom: React.FC<JoinRoomProps> = ({ initialRoomId }) => {
   const [roomId, setRoomId] = useState("");
   const [userName, setUserName] = useState("");
   const socket = useSocket();
+
+  useEffect(() => {
+    setRoomId(initialRoomId || "");
+  }, [initialRoomId]);
 
   const handleJoin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,3 +67,4 @@ export const JoinRoom: React.FC = () => {
     </Card>
   );
 };
+

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSocket } from "../../hooks/useSocket";
 import { Button } from "../UI/Button";
 import { Card } from "../UI/Card";
@@ -7,6 +8,21 @@ export const CreateRoom: React.FC = () => {
   const [userName, setUserName] = useState("");
   const [roomName, setRoomName] = useState("");
   const socket = useSocket();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleRoomCreated = ({ roomId }: { roomId: string }) => {
+      navigate(`/join/${roomId}`);
+    };
+
+    socket.on("room:created", handleRoomCreated);
+
+    return () => {
+      socket.off("room:created", handleRoomCreated);
+    };
+  }, [socket, navigate]);
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,3 +69,4 @@ export const CreateRoom: React.FC = () => {
     </Card>
   );
 };
+

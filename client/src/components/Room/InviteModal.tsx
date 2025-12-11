@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "../UI/Button";
 
@@ -13,13 +13,16 @@ export const InviteModal: React.FC<InviteModalProps> = ({
   onClose,
   roomId,
 }) => {
+  const [copyText, setCopyText] = useState("Copy");
   if (!isOpen) return null;
 
-  const inviteLink = `${window.location.origin}?room=${roomId}`;
+  const inviteLink = `${window.location.origin}/join/${roomId}`;
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(roomId);
-    // Could add toast here
+    navigator.clipboard.writeText(inviteLink).then(() => {
+      setCopyText("Copied!");
+      setTimeout(() => setCopyText("Copy"), 2000);
+    });
   };
 
   return (
@@ -33,13 +36,18 @@ export const InviteModal: React.FC<InviteModalProps> = ({
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-slate-400 mb-1">Room ID</label>
+            <label className="block text-sm text-slate-400 mb-1">
+              Share this link to invite others
+            </label>
             <div className="flex gap-2">
-              <code className="flex-1 bg-slate-900 p-2 rounded text-blue-400 font-mono text-center text-lg">
-                {roomId}
-              </code>
+              <input
+                type="text"
+                readOnly
+                value={inviteLink}
+                className="w-full flex-1 bg-slate-900 p-2 rounded text-blue-400 font-mono text-center"
+              />
               <Button onClick={copyToClipboard} variant="secondary">
-                Copy
+                {copyText}
               </Button>
             </div>
           </div>
