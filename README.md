@@ -1,6 +1,6 @@
-# App de Planning Poker
+# Nice Poker
 
-Uma aplicação de Planning Poker em tempo real construída com React, Node.js e Socket.io. Este projeto permite que equipes estimem tarefas de forma colaborativa.
+Uma aplicação de Nice Poker em tempo real construída com React, Node.js e Socket.io. Este projeto permite que equipes estimem tarefas de forma colaborativa.
 
 ## Pré-requisitos
 
@@ -13,7 +13,7 @@ Uma aplicação de Planning Poker em tempo real construída com React, Node.js e
 
    ```bash
    git clone <repository-url>
-   cd planning
+   cd nice-poker
    ```
 
 2. Instale as dependências para o cliente e o servidor:

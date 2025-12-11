@@ -17,7 +17,7 @@ export const HomePage: React.FC = () => {
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-900 to-slate-800">
       <div className="text-center mb-12">
         <h1 className="text-5xl font-bold text-white mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
-          Nice Planning
+          Nice Poker
         </h1>
         <p className="text-slate-400 text-lg max-w-md mx-auto">
           Real-time estimation tool for agile teams. Simple, fast, and
