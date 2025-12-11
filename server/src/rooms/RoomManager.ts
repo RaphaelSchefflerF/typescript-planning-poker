@@ -1,5 +1,6 @@
-import { Room, Participant } from "./RoomTypes";
 import { v4 as uuidv4 } from "uuid";
+import { Room } from "./RoomTypes";
+import { getRandomCard } from "../utils/getRandomCard";
 
 export class RoomManager {
   private rooms: Map<string, Room> = new Map();
@@ -157,6 +158,14 @@ export class RoomManager {
     if (!room || room.admin !== adminId) return undefined;
 
     room.revealed = true;
+
+    Object.entries(room.votes).forEach(([userId, vote]) => {
+      if (vote === "?") {
+        const randomCard = getRandomCard();
+        room.votes[userId] = randomCard;
+      }
+    });
+
     return room;
   }
 

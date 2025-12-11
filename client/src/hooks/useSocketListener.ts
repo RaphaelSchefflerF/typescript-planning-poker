@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import { useRoomStore } from "../stores/roomStore";
 import { socket } from "../lib/socket";
-import { Room, Participant } from "../types/global";
+import { useRoomStore } from "../stores/roomStore";
+import { Participant, Room } from "../types/global";
 
 export const useSocketListener = () => {
   const {
@@ -92,7 +92,7 @@ export const useSocketListener = () => {
     };
 
     const onVotesRevealed = ({ votes }: { votes: Record<string, string> }) => {
-      revealVotes(votes);
+      useRoomStore.getState().revealVotes(votes);
     };
 
     const onVotesReset = () => {

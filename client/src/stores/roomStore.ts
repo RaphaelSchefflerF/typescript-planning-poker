@@ -1,12 +1,11 @@
 import { create } from "zustand";
-import { Room, Participant } from "../types/global";
+import { Participant, Room } from "../types/global";
 
 interface RoomState {
   room: Room | null;
   userId: string | null;
   userName: string | null;
   isConnected: boolean;
-
   setRoom: (room: Room | null) => void;
   setUserId: (id: string) => void;
   setUserName: (name: string) => void;
@@ -75,21 +74,12 @@ export const useRoomStore = create<RoomState>((set) => ({
 
   revealVotes: (votes) =>
     set((state) => {
-      const cards = ["0", "1", "2", "3", "5", "8", "13", "21", "?", "☕"];
-      const possible = cards.filter((c) => c !== "?" && c !== "☕");
-
-      for (const [userId, vote] of Object.entries(votes)) {
-        if (vote === "?") {
-          const index = Math.floor(Math.random() * possible.length);
-          const picked = possible[index];
-          votes[userId] = picked;
-          state.room?.participants.forEach((p) => {
-            if (p.id === userId) p.vote = picked;
-          });
-        }
-      }
-
       if (!state.room) return state;
+
+      state.room.participants.forEach((p) => {
+        p.vote = votes[p.id];
+      });
+
       return {
         room: {
           ...state.room,
