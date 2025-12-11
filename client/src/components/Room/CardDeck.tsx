@@ -5,7 +5,6 @@ import { useSocket } from "../../hooks/useSocket";
 export const CardDeck: React.FC = () => {
   const room = useRoomStore((state) => state.room);
   const userId = useRoomStore((state) => state.userId);
-  const updateVote = useRoomStore((state) => state.updateVote);
   const socket = useSocket();
 
   if (!room || !userId) return null;
@@ -15,7 +14,6 @@ export const CardDeck: React.FC = () => {
 
   const handleVote = (card: string) => {
     if (!socket) return;
-    updateVote(userId, card);
     socket.emit("vote:submit", { roomId: room.id, vote: card });
   };
 

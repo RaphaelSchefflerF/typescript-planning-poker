@@ -71,7 +71,13 @@ export const useSocketListener = () => {
     };
 
     // Vote events
-    const onVoteReceived = ({ userId }: { userId: string }) => {
+    const onVoteReceived = ({
+      userId,
+      vote,
+    }: {
+      userId: string;
+      vote: string;
+    }) => {
       console.log("Vote received from:", userId);
       // Optimistic update or wait for reveal?
       // Current logic in store updates participant status
@@ -81,6 +87,8 @@ export const useSocketListener = () => {
           .room?.participants.find((p) => p.id === userId)!,
         hasVoted: true,
       });
+
+      useRoomStore.getState().updateVote(userId, vote);
     };
 
     const onVotesRevealed = ({ votes }: { votes: Record<string, string> }) => {

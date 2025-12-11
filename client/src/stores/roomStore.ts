@@ -86,8 +86,6 @@ export const useRoomStore = create<RoomState>((set) => ({
           state.room?.participants.forEach((p) => {
             if (p.id === userId) p.vote = picked;
           });
-        } else {
-          votes[userId] = vote;
         }
       }
 

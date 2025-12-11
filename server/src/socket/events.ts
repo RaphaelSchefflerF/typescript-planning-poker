@@ -86,7 +86,7 @@ export const registerSocketEvents = (
     ({ roomId, vote }: { roomId: string; vote: string }) => {
       const room = roomManager.submitVote(roomId, socket.id, vote);
       if (room) {
-        io.to(roomId).emit("vote:received", { userId: socket.id });
+        io.to(roomId).emit("vote:received", { userId: socket.id, vote: vote });
 
         const allVoted = room.participants.every((p) => p.hasVoted);
         if (allVoted && room.settings.autoReveal) {
